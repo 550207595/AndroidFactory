@@ -1,2 +1,2 @@
 # AndroidFactory
-Built for store android codes written in work.
+Built for storing android codes written in work.
