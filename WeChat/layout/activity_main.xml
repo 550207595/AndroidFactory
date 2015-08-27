@@ -1,0 +1,36 @@
+<LinearLayout
+	android:width="match_parent"
+	android:height="match_parent"
+	android:orientation="vertical">
+
+	<ListView
+		android:id="@+id:msg_list_view"
+		android:width="match_parent"
+		android:height="0dp"
+		android:weight="1">
+
+	</ListView>
+
+	<LinearLayout
+		android:width="match_parent"
+		android:height="wrap_content"
+		android:orientation="horizontal">
+
+		<EditText
+			android:id="@+id:msg_text"
+			android:width="0dp"
+			android:height="wrap_content"
+			android:weight="1"
+			android:singleLine="true"/>
+
+		<Button
+			android:id="@+id:send_btn"
+			android:weight="wrap_content"
+			android:height="wrap_content"
+			android:text="Send"/>
+
+
+	</LinearLayout>
+
+
+</LinearLayout>
