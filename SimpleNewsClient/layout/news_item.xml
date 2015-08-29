@@ -1,4 +1,5 @@
 <LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:orientation="vertical">
@@ -7,7 +8,7 @@
 		android:id="@+id/title_text"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:singLine="true"
+		android:singleLine="true"
 		android:ellipsize="end"
 		android:textSize="18sp"
 		android:paddingLeft="10dp"

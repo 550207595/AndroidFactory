@@ -1,8 +1,19 @@
-public class NewsAdapter extends ArrayAdapter<News>{
+package com.jeiel.simplenewsclient;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
+
+import java.util.List;
+
+public class NewsAdapter extends ArrayAdapter<News> {
 	private int resourceId;
 	public NewsAdapter(Context context, int textViewResourceId, List<News> objects){
 		super(context,textViewResourceId,objects);
-		resourceId=textviewresourceid;
+		resourceId=textViewResourceId;
 	}
 
 	@Override
@@ -11,7 +22,7 @@ public class NewsAdapter extends ArrayAdapter<News>{
 		View view;
 		ViewHolder viewHolder;
 		if(convertView==null){
-			view=LayoutInflater.from(getContext()).inflate(resourceId,null);
+			view= LayoutInflater.from(getContext()).inflate(resourceId,null);
 			viewHolder=new ViewHolder();
 			viewHolder.newsTitleText=(TextView)view.findViewById(R.id.title_text);
 			view.setTag(viewHolder);
