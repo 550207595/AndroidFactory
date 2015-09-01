@@ -5,15 +5,16 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.json.JSONObject;
 
-public class Delete {
+public class Add {
 	private static String postUrl = "http://myoffer.cn/external/api/courses";
-	
+
 	/**
 	 * @param args
 	 * @throws IOException 
@@ -22,9 +23,9 @@ public class Delete {
 		// TODO Auto-generated method stub
 		
 		
-		for(int id=1;id<=21;id++){//id为网页上显示的id号
-			System.out.println("delete "+id);
-			delete(postUrl,id);
+		for(int i=1;i<=10;i++){
+			System.out.println("add "+i);
+			add(postUrl);
 		}
 	   
 	}
@@ -50,7 +51,7 @@ public class Delete {
 	    return connection;
 	}
 	
-	public static void delete(String postUrl,int id) throws IOException{
+	public static void add(String postUrl) throws IOException{
 	    
 		HttpURLConnection connection=getConnection(postUrl);
 		DataOutputStream out= new DataOutputStream(connection.getOutputStream());
@@ -58,16 +59,62 @@ public class Delete {
 	    //固定值
 	    JSONObject entry=new JSONObject();
 	    entry.put("target", "course");
-	    entry.put("action", "remove");
+	    entry.put("action", "add");
 	    
 	    //自定义值
+	    
+	    JSONObject course=new JSONObject();
+	    course.put("school", "School");
+	    course.put("level", "Level");
+	    course.put("title", "Title");
+	    course.put("type", "Type");
+	    course.put("application", 1);
+	    course.put("tuition", 1);
+	    course.put("academic", 1);
+	    course.put("ielts_avg", 1);
+	    course.put("ielts_low", "");
+	    course.put("ielts_low_l", "");
+	    course.put("ielts_low_s", 1);
+	    course.put("ielts_low_r", 1);
+	    course.put("ielts_low_w", 1);
+	    
+	    JSONObject structureItem;
+	    List<JSONObject> structureList=new ArrayList<JSONObject>();
+	    for(int i=0;i<4;i++){//i的长度为年数
+	    	structureItem=new JSONObject();
+	    	structureItem.put("category", ""+i);
+	    	structureItem.put("summary", ""+i+""+i+""+i+""+i);
+	    	structureList.add(structureItem);
+	    }
+	    if(structureList.size()>0)
+	    	course.put("structure", structureList);
+	    
+	    course.put("length", 36);
+	    course.put("month", 9);
+	    
+	    JSONObject scholarshipItem;
+	    List<JSONObject> scholarshipList=new ArrayList<JSONObject>();
+	   	for(int i=0;i<3;i++){//i个长度为奖学金个数
+	   		scholarshipItem=new JSONObject();
+	   		scholarshipItem.put("name", ""+i);
+	   		scholarshipItem.put("value", ""+i+""+i+""+i);
+	   		scholarshipList.add(scholarshipItem);
+	   	}
+	   	if(scholarshipList.size()>0)
+	   		course.put("scholarship", scholarshipList);
+	   	
+	   	
 	   	JSONObject value=new JSONObject();
 	    value.put("university", "saos");
-	    value.put("id", id);
+	    value.put("course", course);
 	   	entry.put("value", value);
 	    
-	    /*{"target":"course","action":"remove",
-	     		"value":{"university":"saos","id":65}}*/
+	    /*{"target":"course","action":"add",
+	    	"value":{"university":"saos",
+	    		"course":{"school":"School","level":"Level","title":"Title","type":"Type","application":1,"tuition":1,"academic":"1","ielts_avg":1,"ielts_low":1,"ielts_low_l":1,"ielts_low_s":1,"ielts_low_r":1,"ielts_low_w":1,
+	    			"structure":[{"category":"1","summary":"1111"},{"category":"2","summary":"2222"},{"category":"3","summary":"3333"},{"category":"4","summary":"4444"}],
+	    			"length":36,"month":9,
+	    				"scholarship":[{"name":"1","value":"111"},{"name":"2","value":"222"}]}}}*/
 	    
 	    
 	    //System.out.println(entry.toString());
@@ -84,6 +131,7 @@ public class Delete {
 	    	sb.append(lines);
 	    }
 	    
+	    
 	    System.out.println(sb);
 	    
 	    out.close();
@@ -91,4 +139,5 @@ public class Delete {
 	    reader.close();
 	}
 	
+
 }
