@@ -19,9 +19,9 @@ import java.util.*;
 
 public class POIReadAndPost {
 	
-	public static String StructureDir="C:\\Users\\Administrator\\Desktop\\wyl\\structure_ug";
+	public static String StructureDir="C:\\Users\\Administrator\\Desktop\\wyl\\structure_pgt";
 
-	public static String filepath="C:\\Users\\Administrator\\Desktop\\wyl\\gen_data_strath_ug.xls";
+	public static String filepath="C:\\Users\\Administrator\\Desktop\\wyl\\gen_data_strath_pgt.xls";
 	/**
 	 * @param args
 	 * @throws IOException 
@@ -122,7 +122,7 @@ public class POIReadAndPost {
 		}
 
 		result.put(title, FilterToHTML.filter(text));
-
+		
 		return result;
 	}
 	

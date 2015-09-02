@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -31,10 +32,12 @@ public class Add {
 	public static void main(String[] args){
 		// TODO Auto-generated method stub
 		try {
+			System.out.println("work start");
 			List<Major> list=POIReadAndPost.getData(null);
-			for(;index<=1;){
+			for(;index<=list.size();){
 				add(postUrl,list.get(index-1));
 			}
+			System.out.println("work done");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -126,14 +129,14 @@ public class Add {
 		   		course.put("scholarship", scholarshipList);*/
 		   	
 		   	JSONObject value=new JSONObject();
-		    value.put("university", "saos");
+		    value.put("university", "STRATH");
 		    value.put("course", course);
 		   	entry.put("value", value);
 		    out.write(entry.toString().getBytes("utf8"));
 		    out.flush();
 		    
 		    //¶ÁÈ¡ÏìÓ¦
-
+		    
 		    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 		    String lines;
 		    StringBuffer sb = new StringBuffer("");

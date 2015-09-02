@@ -22,7 +22,7 @@ public class Delete {
 		// TODO Auto-generated method stub
 		
 		
-		for(;index<=59;){//index为网页上显示的id号
+		for(;index<=43;){//index为网页上显示的id号
 			
 			delete(postUrl,index);
 		}
