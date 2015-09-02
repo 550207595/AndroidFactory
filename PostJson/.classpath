@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="lib/ezmorph-1.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/json-lib-1.1-jdk13.jar"/>
 	<classpathentry kind="lib" path="lib/xom-1.0d10.jar"/>
+	<classpathentry kind="lib" path="lib/poi-3.12-20150511.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

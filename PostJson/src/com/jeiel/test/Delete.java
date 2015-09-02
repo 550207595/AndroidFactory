@@ -13,7 +13,7 @@ import net.sf.json.JSONObject;
 
 public class Delete {
 	private static String postUrl = "http://myoffer.cn/external/api/courses";
-	
+	private static int index=1;
 	/**
 	 * @param args
 	 * @throws IOException 
@@ -22,9 +22,9 @@ public class Delete {
 		// TODO Auto-generated method stub
 		
 		
-		for(int id=1;id<=21;id++){//id为网页上显示的id号
-			System.out.println("delete "+id);
-			delete(postUrl,id);
+		for(;index<=59;){//index为网页上显示的id号
+			
+			delete(postUrl,index);
 		}
 	   
 	}
@@ -50,45 +50,48 @@ public class Delete {
 	    return connection;
 	}
 	
-	public static void delete(String postUrl,int id) throws IOException{
-	    
-		HttpURLConnection connection=getConnection(postUrl);
-		DataOutputStream out= new DataOutputStream(connection.getOutputStream());
-		
-	    //固定值
-	    JSONObject entry=new JSONObject();
-	    entry.put("target", "course");
-	    entry.put("action", "remove");
-	    
-	    //自定义值
-	   	JSONObject value=new JSONObject();
-	    value.put("university", "saos");
-	    value.put("id", id);
-	   	entry.put("value", value);
-	    
-	    /*{"target":"course","action":"remove",
-	     		"value":{"university":"saos","id":65}}*/
-	    
-	    
-	    //System.out.println(entry.toString());
-	    out.writeBytes(entry.toString());
-	    out.flush();
-	    
-	    //读取响应
+	public static void delete(String postUrl,int id) {
+	    try{
+	    	System.out.println("Delete "+index);
+	    	HttpURLConnection connection=getConnection(postUrl);
+			DataOutputStream out= new DataOutputStream(connection.getOutputStream());
+			
+		    //固定值
+		    JSONObject entry=new JSONObject();
+		    entry.put("target", "course");
+		    entry.put("action", "remove");
+		    
+		    //自定义值
+		   	JSONObject value=new JSONObject();
+		    value.put("university", "saos");
+		    value.put("id", id);
+		   	entry.put("value", value);
+		    
+		    out.writeBytes(entry.toString());
+		    out.flush();
+		    
+		    //读取响应
 
-	    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-	    String lines;
-	    StringBuffer sb = new StringBuffer("");
-	    while ((lines = reader.readLine()) != null) {
-	    	lines = new String(lines.getBytes(), "utf-8");
-	    	sb.append(lines);
+		    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+		    String lines;
+		    StringBuffer sb = new StringBuffer("");
+		    while ((lines = reader.readLine()) != null) {
+		    	lines = new String(lines.getBytes(), "utf-8");
+		    	sb.append(lines);
+		    }
+		    
+		    System.out.println(sb);
+
+		    out.close();
+		    connection.disconnect();
+		    reader.close();
+		    System.out.println("Deleted");
+		    index++;
+	    }catch(Exception e){
+	    	System.out.println("Terminated at "+index);
+	    	System.out.println("Restart at "+index);
 	    }
-	    
-	    System.out.println(sb);
-	    
-	    out.close();
-	    connection.disconnect();
-	    reader.close();
+		
 	}
 	
 }

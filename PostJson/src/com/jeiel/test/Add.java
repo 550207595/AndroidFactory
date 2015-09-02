@@ -2,35 +2,49 @@ package com.jeiel.test;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 
+import net.sf.json.JSON;
 import net.sf.json.JSONObject;
+import net.sf.json.util.JSONStringer;
 
 public class Add {
 	private static String postUrl = "http://myoffer.cn/external/api/courses";
 
+	private static int index=1;
 	/**
 	 * @param args
 	 * @throws IOException 
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args){
 		// TODO Auto-generated method stub
-		
-		
-		for(int i=1;i<=10;i++){
-			System.out.println("add "+i);
-			add(postUrl);
+		try {
+			List<Major> list=POIReadAndPost.getData(null);
+			for(;index<=1;){
+				add(postUrl,list.get(index-1));
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
 	   
 	}
 	
-	public static HttpURLConnection getConnection(String postUrl) throws IOException{
+	
+	public static HttpURLConnection getConnection(String postUrl) throws Exception {
 		URL url = new URL(postUrl);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 	    connection.setDoOutput(true);
@@ -51,93 +65,106 @@ public class Add {
 	    return connection;
 	}
 	
-	public static void add(String postUrl) throws IOException{
+	public static void add(String postUrl,Major major){
 	    
-		HttpURLConnection connection=getConnection(postUrl);
-		DataOutputStream out= new DataOutputStream(connection.getOutputStream());
 		
-	    //固定值
-	    JSONObject entry=new JSONObject();
-	    entry.put("target", "course");
-	    entry.put("action", "add");
-	    
-	    //自定义值
-	    
-	    JSONObject course=new JSONObject();
-	    course.put("school", "School");
-	    course.put("level", "Level");
-	    course.put("title", "Title");
-	    course.put("type", "Type");
-	    course.put("application", 1);
-	    course.put("tuition", 1);
-	    course.put("academic", 1);
-	    course.put("ielts_avg", 1);
-	    course.put("ielts_low", "");
-	    course.put("ielts_low_l", "");
-	    course.put("ielts_low_s", 1);
-	    course.put("ielts_low_r", 1);
-	    course.put("ielts_low_w", 1);
-	    
-	    JSONObject structureItem;
-	    List<JSONObject> structureList=new ArrayList<JSONObject>();
-	    for(int i=0;i<4;i++){//i的长度为年数
-	    	structureItem=new JSONObject();
-	    	structureItem.put("category", ""+i);
-	    	structureItem.put("summary", ""+i+""+i+""+i+""+i);
-	    	structureList.add(structureItem);
-	    }
-	    if(structureList.size()>0)
-	    	course.put("structure", structureList);
-	    
-	    course.put("length", 36);
-	    course.put("month", 9);
-	    
-	    JSONObject scholarshipItem;
-	    List<JSONObject> scholarshipList=new ArrayList<JSONObject>();
-	   	for(int i=0;i<3;i++){//i个长度为奖学金个数
-	   		scholarshipItem=new JSONObject();
-	   		scholarshipItem.put("name", ""+i);
-	   		scholarshipItem.put("value", ""+i+""+i+""+i);
-	   		scholarshipList.add(scholarshipItem);
-	   	}
-	   	if(scholarshipList.size()>0)
-	   		course.put("scholarship", scholarshipList);
-	   	
-	   	
-	   	JSONObject value=new JSONObject();
-	    value.put("university", "saos");
-	    value.put("course", course);
-	   	entry.put("value", value);
-	    
-	    /*{"target":"course","action":"add",
-	    	"value":{"university":"saos",
-	    		"course":{"school":"School","level":"Level","title":"Title","type":"Type","application":1,"tuition":1,"academic":"1","ielts_avg":1,"ielts_low":1,"ielts_low_l":1,"ielts_low_s":1,"ielts_low_r":1,"ielts_low_w":1,
-	    			"structure":[{"category":"1","summary":"1111"},{"category":"2","summary":"2222"},{"category":"3","summary":"3333"},{"category":"4","summary":"4444"}],
-	    			"length":36,"month":9,
-	    				"scholarship":[{"name":"1","value":"111"},{"name":"2","value":"222"}]}}}*/
-	    
-	    
-	    //System.out.println(entry.toString());
-	    out.writeBytes(entry.toString());
-	    out.flush();
-	    
-	    //读取响应
+		try {
+			System.out.println("Add "+index);
+			HttpURLConnection connection = getConnection(postUrl);
+			DataOutputStream out= new DataOutputStream(connection.getOutputStream());
+			
+		    //固定值
+		    JSONObject entry=new JSONObject();
+		    entry.put("target", "course");
+		    entry.put("action", "add");
+		    
+		    //自定义值
+		    
+		    JSONObject course=new JSONObject();
+		    course.put("school", major.getSchool());
+		    course.put("level", major.getLevel());
+		    course.put("title", major.getTitle());
+		    course.put("type", major.getType());
+		    course.put("application", major.getApplicationFee().trim().replace(",", ""));
+		    course.put("tuition", major.getTuitionFee().trim().replace(",", ""));
+		    course.put("academic", major.getAcademicRequirements());
+		    course.put("ielts_avg", major.getIELTS_Avg().trim());
+		    course.put("ielts_low", major.getIELTS_Low().trim());
 
-	    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-	    String lines;
-	    StringBuffer sb = new StringBuffer("");
-	    while ((lines = reader.readLine()) != null) {
-	    	lines = new String(lines.getBytes(), "utf-8");
-	    	sb.append(lines);
-	    }
-	    
-	    
-	    System.out.println(sb);
-	    
-	    out.close();
-	    connection.disconnect();
-	    reader.close();
+		    /*course.put("ielts_low_l", "");
+		    course.put("ielts_low_s", 1);
+		    course.put("ielts_low_r", 1);
+		    course.put("ielts_low_w", 1);*/
+		    
+		    LinkedHashMap<String, String> structureMap=major.getStructure();
+		    JSONObject structureItem;
+		    List<JSONObject> structureList=new ArrayList<JSONObject>();
+		    for(Map.Entry<String, String>e:structureMap.entrySet()){
+		    	structureItem=new JSONObject();
+	    		structureItem.put("category", e.getKey());
+		    	structureItem.put("summary", e.getValue());
+		    	structureList.add(structureItem);
+
+		    }
+		    
+		    if(structureList.size()>0)
+		    	course.put("structure", structureList);
+		    
+		    course.put("length", major.getLength());
+		    course.put("month", major.getMonthOfEntry());
+
+		    /*
+		    JSONObject scholarshipItem;
+		    List<JSONObject> scholarshipList=new ArrayList<JSONObject>();
+		   	for(int i=0;i<3;i++){//i个长度为奖学金个数
+		   		scholarshipItem=new JSONObject();
+		   		scholarshipItem.put("name", ""+i);
+		   		scholarshipItem.put("value", ""+i+""+i+""+i);
+		   		scholarshipList.add(scholarshipItem);
+		   	}
+		   	if(scholarshipList.size()>0)
+		   		course.put("scholarship", scholarshipList);*/
+		   	
+		   	JSONObject value=new JSONObject();
+		    value.put("university", "saos");
+		    value.put("course", course);
+		   	entry.put("value", value);
+		    out.write(entry.toString().getBytes("utf8"));
+		    out.flush();
+		    
+		    //读取响应
+
+		    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+		    String lines;
+		    StringBuffer sb = new StringBuffer("");
+		    while ((lines = reader.readLine()) != null) {
+		    	lines = new String(lines.getBytes(), "utf-8");
+		    	sb.append(lines);
+		    }
+		    
+		    
+		    System.out.println("get return");
+		    
+		    out.close();
+		    connection.disconnect();
+		    reader.close();
+		    System.out.println("Added");
+		    index++;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			
+			e.printStackTrace();
+			System.out.println("Terminated at "+index);
+	    	System.out.println("Restart at "+index);
+		}
+		
 	}
-	
+	public static void write(String a) throws IOException{
+		File file=new File("d://test.txt");
+		if(!file.exists())file.createNewFile();
+		FileOutputStream fos=new FileOutputStream(file);
+		fos.write(a.getBytes());
+		fos.close();
+	}
 
 }
