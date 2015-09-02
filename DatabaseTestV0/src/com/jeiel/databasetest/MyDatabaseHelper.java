@@ -7,5 +7,10 @@ public class MyDatabaseHelper extends SQLiteOpenHelper{
 				"price real,"+
 				"pages integer,"+
 				"name text)";
+	private Context mContext
+
+	public MyDatabaseHelper(Context context,String name,CursorFactory factory,){
+
+	}
 
 }
