@@ -18,6 +18,7 @@ public class MainActivity extends Activity{
 		receiveFilter.setPriority(100);
 		messageReceiver = new MessageReceiver();
 		registerReceiver(messageReceiver, receiveFilter);
+		
 		to = (EditText) findViewById(R.id.to);
 		msgInput = (EditText) findViewById(R.id.msg_input);
 		send = (Button) findViewById(R.id.send);
@@ -25,6 +26,7 @@ public class MainActivity extends Activity{
 		sendFilter.addAction("SENT_SMS_ACTION");
 		sendStatusReceiver = new sendStatusReceiver();
 		registerReceiver(sendStatusReceiver, sendFilter);
+		
 		send.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v){
