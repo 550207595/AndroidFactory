@@ -33,7 +33,7 @@ public class MainActivity extends Activity implements OnClickListener{
 			sendRequestWithHttpUrlConnection(new Url("http://www.baidu.com"));
 			break;
 		case R.id.send_request_2:
-			sendRequestWithHttpClient(new Url("http://www.baidu.com"));
+			sendRequestWithHttpClient(new Url("http://127.0.0.2:8088/get_data.xml"));
 			break;
 		default:
 			break;
@@ -78,7 +78,7 @@ public class MainActivity extends Activity implements OnClickListener{
 			@Override
 			public void run(){
 				
-				try{
+				/*try{
 					HttpClient httpClient = new DefaultHttpClient();
 					HttpGet httpGet = new HttpGet(url);
 					HttpResponse httpResponse = httpClient.execute(httpGet);
@@ -92,9 +92,72 @@ public class MainActivity extends Activity implements OnClickListener{
 					}
 				}catch(Exception e){
 					e.printStackTrace();
+				}*/
+				try{
+					HttpClient httpClient = new DefaultHttpClient();
+					HttpGet httpGet = new HttpGet(url);
+					HttpResponse httpResponse = httpClient.execute(httpGet);
+					if(httpResponse.getStatusLine().getStatusCode() == 200){
+						HttpEntity entity = httpResponse.getEntity();
+						String response = EntityUtil.toString(entity, "utf-8");
+						
+						parseXMLWithPull(response);
+						parseXMLWithSAX(response)
+					}
+				}catch(Exception e){
+					e.printStackTrace();
 				}
-				
 			}
 		}).start();
+	}
+
+	private void parseXMLWithPull(String xmlData){
+		try{
+			XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+			XmlPullParser xmlPullParser = factory.newPullParser();
+			xmlPullParser.setInput(new StringReader(xmlData));
+			int eventType = xmlPullparser.getEventType();
+			String id = "";
+			String name = "";
+			String version = "";
+			while(eventType != XmlPullParser.END_DOCUMENT){
+				String nodeName = xmlPullparser.getName();
+				switch(eventType){
+				case XmlPullParser.START_TAG:
+					if("id".equals(nodeName)){
+						id = xmlPullParser.nextText();
+					}else if("name".equals(nodeName)){
+						name = xmlPullParser.nextText();
+					}else if("version".equals(nodeName)){
+						version = xmlPullParser.nextText();
+					}
+					break;
+				case XmlPullParser.END_TAG:
+					if("app".equlas(nodeName)){
+						Log.d("MainActivity", "id is " + id);
+						Log.d("MainActivity", "name is " + name);
+						Log.d("MainActivity", "version is " + version);
+					}
+					break;
+				default:
+					break;
+				}
+				eventType = xmlPullParser.next();
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void parseXMLWithSAX(String xmlData){
+		try{
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			XMLReader xmlReader = factory.newSAXParser().getReader();
+			ContentHandler handler = new ContentHandler();
+			xmlReader.setContentHandler(handler);
+			xmlReader.parse(new InputSource(new StringReader(xmlData)));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 }
