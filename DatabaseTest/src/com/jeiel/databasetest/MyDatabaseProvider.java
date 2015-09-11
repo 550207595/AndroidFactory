@@ -1,18 +1,27 @@
+package com.jeiel.databasetest;
+
+import android.content.ContentProvider;
+import android.content.ContentValues;
+import android.content.UriMatcher;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
+
 public class MyDatabaseProvider extends ContentProvider{
-	private static final String BOOK_DIR = 0;
-	private static final String BOOK_ITEM = 1;
-	private static final String CATEGORY_DIR = 2;
-	private static final String CATEGORY_ITEM = 3;
+	private static final int BOOK_DIR = 0;
+	private static final int BOOK_ITEM = 1;
+	private static final int CATEGORY_DIR = 2;
+	private static final int CATEGORY_ITEM = 3;
 	private static final String AUTHORITY = "com.jeiel.databasetest.provider";
 	private static UriMatcher uriMatcher;
 	private MyDatabaseHelper dbHelper;
 
 	static{
-		uriMatcher = new UriMatcher(UriMacher.NO_MATCH);
-		uriMatcher.add(AUTHORITY, "Book", BOOK_DIR);
-		uriMatcher.add(AUTHORITY, "Book/#", BOOK_ITEM);
-		uriMatcher.add(AUTHORITY, "Category", CATEGORY_DIR);
-		uriMatcher.add(AUTHORITY, "Category/#", CATEGORY_ITEM);
+		uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+		uriMatcher.addURI(AUTHORITY, "Book", BOOK_DIR);
+		uriMatcher.addURI(AUTHORITY, "Book/#", BOOK_ITEM);
+		uriMatcher.addURI(AUTHORITY, "Category", CATEGORY_DIR);
+		uriMatcher.addURI(AUTHORITY, "Category/#", CATEGORY_ITEM);
 	}
 
 	@Override
@@ -50,7 +59,7 @@ public class MyDatabaseProvider extends ContentProvider{
 	public Uri insert(Uri uri, ContentValues values){
 		SQLiteDatabase db = dbHelper.getWritableDatabase();
 		Uri uriReturn = null;
-		switch(uriMatcher) {
+		switch(uriMatcher.match(uri)) {
 		case BOOK_DIR:
 		case BOOK_ITEM:
 			long newBookId = db.insert("Book", null, values);
@@ -84,7 +93,7 @@ public class MyDatabaseProvider extends ContentProvider{
 			break;
 		case CATEGORY_ITEM:
 			String categoryId = uri.getPathSegments().get(1);
-			String categoryId = db.update("Category", value, "id = ?", new String[]{ categoryId })
+			updatedRows = db.update("Category", values, "id = ?", new String[]{ categoryId });
 			break;
 		default:
 			break;
