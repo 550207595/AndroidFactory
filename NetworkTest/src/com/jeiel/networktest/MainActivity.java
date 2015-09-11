@@ -33,7 +33,9 @@ public class MainActivity extends Activity implements OnClickListener{
 			sendRequestWithHttpUrlConnection(new Url("http://www.baidu.com"));
 			break;
 		case R.id.send_request_2:
-			sendRequestWithHttpClient(new Url("http://127.0.0.2:8088/get_data.xml"));
+			/*sendRequestWithHttpUrlConnection(new Url("http://www.baidu.com"));*/
+			/*sendRequestWithHttpClient(new Url("http://127.0.0.2:8088/get_data.xml"));*/
+			sendRequestWithHttpClient(new Url("http://127.0.0.2:8088/get_data.json"));
 			break;
 		default:
 			break;
@@ -93,7 +95,7 @@ public class MainActivity extends Activity implements OnClickListener{
 				}catch(Exception e){
 					e.printStackTrace();
 				}*/
-				try{
+				/*try{
 					HttpClient httpClient = new DefaultHttpClient();
 					HttpGet httpGet = new HttpGet(url);
 					HttpResponse httpResponse = httpClient.execute(httpGet);
@@ -102,7 +104,21 @@ public class MainActivity extends Activity implements OnClickListener{
 						String response = EntityUtil.toString(entity, "utf-8");
 						
 						parseXMLWithPull(response);
-						parseXMLWithSAX(response)
+						parseXMLWithSAX(response);
+					}
+				}catch(Exception e){
+					e.printStackTrace();
+				}*/
+				try{
+					HttpClient httpClient = new DefaultHttpClient();
+					HttpGet httpGet = new HttpGet(url);
+					HttpResponse httpResponse = httpClient.execute(httpGet);
+					if(httpResponse.getStatusLine().getStatusCode() == 200){
+						HttpEntity entity = httpResponse.getEntity();
+						String response = EntityUtil.toString(entity, "utf-8");
+						
+						parseJSONWithJSONObject(response);
+						parseJSONWithGSON(response);
 					}
 				}catch(Exception e){
 					e.printStackTrace();
@@ -157,6 +173,38 @@ public class MainActivity extends Activity implements OnClickListener{
 			xmlReader.setContentHandler(handler);
 			xmlReader.parse(new InputSource(new StringReader(xmlData)));
 		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+
+	private void parseJSONWithJSONObject(String jsonData){
+		try{
+			JsonArray jsonArray = new JsonArray(jsonData);
+			for(int i = 0; i < jsonArray.length; i++){
+				JSONObject jsonObject = jsonArray.get(i);
+				String id = jsonObject.getString("id");
+				String name = jsonObject.getString("name");
+				String version = jsonObject.getString("version");
+
+				Log.d("MainActivity", "id is " + id);
+				Log.d("MainActivity", "name is " + name);
+				Log.d("MainActivity", "version is " + version);
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void parseJSONWithGSON(String jsonData){
+		try{
+			Gson gson = new Gson();
+			List<App> appList = gson.fromJson(jsonData, new TypeToken<List<App>>(){}.getType());
+			for(App app : appList){
+				Log.d("MainActivity", "id is " + app.getId());
+				Log.d("MainActivity", "name is " + app.getName());
+				Log.d("MainActivity", "version is " + app.getVersion());
+			}
+		}catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
