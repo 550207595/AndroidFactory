@@ -1,0 +1,1 @@
+copy the music.mp3 to SDCard root Directory
