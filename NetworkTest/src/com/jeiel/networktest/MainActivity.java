@@ -31,6 +31,19 @@ public class MainActivity extends Activity implements OnClickListener{
 		switch(v.getId()){
 		case R.id.send_request_1:
 			sendRequestWithHttpUrlConnection(new Url("http://www.baidu.com"));
+			/*HttpUtil.sendHttpRequest("http://www.baidu.com", new HttpCallbackListener(){
+				@Override
+				public void onFinish(String response){
+					Message msg = new Message();
+					msg.what = SHOW_RESPONSE;
+					msg.obj = response;
+					handler.sendMessage(msg);
+				}
+				@Override
+				public void onError(Exception e){
+					e.printStackTrace();
+				}
+			});*/
 			break;
 		case R.id.send_request_2:
 			/*sendRequestWithHttpUrlConnection(new Url("http://www.baidu.com"));*/
