@@ -3,6 +3,7 @@ public class MainActivity extends Activity implements OnClickListener{
 	private Button stopService;
 	private Button bindService;
 	private Button unbindService;
+	private Button startIntentService;
 	private MyService.DownloadBinder downloadBinder;
 	private ServiceConnection connection = new ServiceConnection(){
 		@Override
@@ -30,6 +31,8 @@ public class MainActivity extends Activity implements OnClickListener{
 		unbindService = (Button) findViewById(R.id.unbind_service);
 		bindService.setOnClickListener(this);
 		unbindService.setOnClickListener(this);
+		startIntentService = (Button) findViewById(R.id.start_intent_service);
+		startIntentService.setOnClickListener(this);
 	}
 
 	@Override
@@ -49,6 +52,11 @@ public class MainActivity extends Activity implements OnClickListener{
 			break;
 		case R.id.unbind_service:
 			unbindService(connection);
+			break;
+		case R.id.start_intent_service:
+			Log.d("MainActivity", "Thread id is " + Thread.currentThread().getId());
+			Intent intent = new Intent(this, MyIntentService.class);
+			startService(intent);
 			break;
 		default:
 			break;
