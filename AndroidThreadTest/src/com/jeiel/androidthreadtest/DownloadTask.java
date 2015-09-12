@@ -1,11 +1,22 @@
-public class DownloadTask extends AsynTask<Void, Integer, Boolean>{
-	/*private ProgressDialog progressDialog;
+package com.jeiel.androidthreadtest;
+
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.widget.Toast;
+
+public class DownloadTask extends AsyncTask<Void, Integer, Boolean> {
+	private ProgressDialog progressDialog;
 	private Context context;
+	private int total = 500;
+	private int progress = 0;
 
 	public DownloadTask(Context context, ProgressDialog progressDialog){
 		this.context = context;
 		this.progressDialog = progressDialog;
-	}*/
+		total = 500;
+		progress = 0;
+	}
 
 	@Override
 	protected void onPreExecute(){
@@ -28,8 +39,12 @@ public class DownloadTask extends AsynTask<Void, Integer, Boolean>{
 		return true;
 	}
 
+	private int doDownload(){
+		return (++progress)/total;
+	}
+
 	@Override
-	protected void onPregressUpdate(Integer... values){
+	protected void onProgressUpdate(Integer... values){
 		progressDialog.setMessage("Download " + values[0] + "%");
 	}
 
@@ -37,9 +52,9 @@ public class DownloadTask extends AsynTask<Void, Integer, Boolean>{
 	protected void onPostExecute(Boolean result){
 		progressDialog.dismiss();
 		if(result){
-			Toast.makeText(context, "Download succeeded", Toast.LENGTH_SHORT).show()
+			Toast.makeText(context, "Download succeeded", Toast.LENGTH_SHORT).show();
 		}else{
-			Toast.makeText(context, "Download failed", Toast.LENGTH_SHORT).show()
+			Toast.makeText(context, "Download failed", Toast.LENGTH_SHORT).show();
 		}
 	}
 }
