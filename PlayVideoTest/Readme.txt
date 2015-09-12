@@ -1,0 +1,1 @@
+copy the movie.3gp to SDCard root Directory
