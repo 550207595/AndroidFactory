@@ -1,3 +1,11 @@
+package com.jeiel.networktest;
+
+import android.util.Log;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
 public class ContentHandler extends DefaultHandler{
 	private String nodeName;
 	private StringBuilder id;
@@ -5,14 +13,14 @@ public class ContentHandler extends DefaultHandler{
 	private StringBuilder version;
 
 	@Override
-	public void startDocument() throws SAXException{
+	public void startDocument() throws SAXException {
 		id = new StringBuilder();
 		name = new StringBuilder();
 		version = new StringBuilder();
 	}
 
 	@Override
-	public void startElement(String uri, String localName, String qName, 
+	public void startElement(String uri, String localName, String qName,
 		Attributes attributes) throws SAXException{
 		nodeName = localName;
 	}
@@ -30,7 +38,7 @@ public class ContentHandler extends DefaultHandler{
 
 	@Override
 	public void endElement(String uri, String localName, String qName)throws SAXException{
-		if("app".equals(nodeName)){
+		if("app".equals(localName)){
 			Log.d("ContentHandler", "id is " + id.toString().trim());
 			Log.d("ContentHandler", "name is " + name.toString().trim());
 			Log.d("ContentHandler", "version is" + version.toString().trim());

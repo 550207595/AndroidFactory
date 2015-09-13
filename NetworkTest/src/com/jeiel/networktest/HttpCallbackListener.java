@@ -1,4 +1,6 @@
-public Interface HttpCallbackListener{
+package com.jeiel.networktest;
+
+public interface HttpCallbackListener{
 	void onFinish(String response);
-	void onError(Exception e)
+	void onError(Exception e);
 }
