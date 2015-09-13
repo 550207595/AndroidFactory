@@ -1,3 +1,9 @@
+package com.jeiel.servicetest;
+
+import android.app.IntentService;
+import android.content.Intent;
+import android.util.Log;
+
 public class MyIntentService extends IntentService{
 	public MyIntentService(){
 		super("MyIntentService");
@@ -9,7 +15,7 @@ public class MyIntentService extends IntentService{
 	}
 
 	@Override
-	protected void onDestroy(){
+	public void onDestroy(){
 		super.onDestroy();
 		Log.d("MyIntentService", "onDestroy executed");
 	}
