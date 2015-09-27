@@ -5,12 +5,24 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,11 +31,24 @@ import java.util.List;
 public class MainActivity extends Activity {
     private TextView locationText;
     private LocationManager manager;
-    private String provider;
+    private final int SHOW_LOCATION = 0;
+    private Handler handler = new Handler(){
+      public void handleMessage(Message msg){
+          switch (msg.what){
+              case SHOW_LOCATION:
+                  locationText.setText((String)msg.obj);
+                  break;
+              default:
+                  break;
+          }
+      }
+    };
     private LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
-            showLocation(location);
+            List<Location> locations = new ArrayList<Location>();
+            locations.add(location);
+            showLocation(locations);
         }
 
         @Override
@@ -43,35 +68,70 @@ public class MainActivity extends Activity {
         locationText = (TextView) findViewById(R.id.location_text);
         manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         List<String> providers = manager.getProviders(true);
-
-        if (providers.contains(LocationManager.GPS_PROVIDER)){
-            provider = LocationManager.GPS_PROVIDER;
-        }else if(providers.contains(LocationManager.NETWORK_PROVIDER)){
-            provider = LocationManager.NETWORK_PROVIDER;
-        }else{
+        List<Location> locations = new ArrayList<Location>();
+        providers.remove(manager.PASSIVE_PROVIDER);
+        if(providers.size() == 0){
             Toast.makeText(this, "No location provider to use", Toast.LENGTH_SHORT).show();
             return;
         }
-        Location location = manager.getLastKnownLocation(provider);
-        if(location != null){
-            showLocation(location);
+        if (providers.contains(LocationManager.GPS_PROVIDER)){
+            locations.add(manager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
         }
-        manager.requestLocationUpdates(provider, 1000, 1, locationListener);
+        if(providers.contains(LocationManager.NETWORK_PROVIDER)){
+            locations.add(manager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
+        }
+        if(locations.size()>0){
+            locationText.setText("Locating...");
+            showLocation(locations);
+        }
+        for(String provider : providers){
+            manager.requestLocationUpdates(provider, 1000, 1, locationListener);
+        }
     }
 
-    private void showLocation(Location location){
-        StringBuilder locationStr = new StringBuilder();
-        if(location.getProvider().equals(LocationManager.GPS_PROVIDER)){
-            locationStr.append("GPS_PROVIDER:\n");
-            locationStr.append("Latitude: " + location.getLatitude() + "\n");
-            locationStr.append("Longitude: " + location.getLongitude() + "\n");
-        }else if(location.getProvider().equals(LocationManager.NETWORK_PROVIDER)){
-            locationStr.append("NETWORK_PROVIDER:\n");
-            locationStr.append("Latitude: " + location.getLatitude() + "\n");
-            locationStr.append("Longitude: " + location.getLongitude() + "\n");
-        }
-        locationStr.append("Time: " + new Date());
-        locationText.setText(locationStr);
+    private void showLocation(final List<Location> locations){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                StringBuilder locationStr = new StringBuilder();
+                for(Location location : locations){
+                    if(location != null){
+                        HttpClient client = new DefaultHttpClient();
+
+                        StringBuilder url = new StringBuilder();
+                        locationStr.append(location.getProvider() + ":\n");
+                        locationStr.append("Latitude: " + location.getLatitude() + "\n");
+                        locationStr.append("Longitude: " + location.getLongitude() + "\n");
+                        url.append("http://maps.googleapis.com/maps/api/geocode/json?latlng=");
+                        url.append(location.getLatitude() + "," + location.getLongitude() + "&sensor=false");
+                        HttpGet httpGet = new HttpGet(url.toString());
+                        httpGet.addHeader("Accept-Language", "zh-CN");
+                        try{
+                            HttpResponse httpResponse = client.execute(httpGet);
+                            if(httpResponse.getStatusLine().getStatusCode() == 200){
+                                HttpEntity entity = httpResponse.getEntity();
+                                String response = EntityUtils.toString(entity, "utf-8");
+                                JSONObject jsonObject = new JSONObject(response);
+                                JSONArray resultArray = jsonObject.getJSONArray("results");
+                                if(resultArray.length()>0){
+                                    JSONObject subObject = resultArray.getJSONObject(0);
+                                    String address = subObject.getString("formatted_address");
+                                    locationStr.append("Address: "+ address + "\n");
+                                }
+                            }
+                        }catch(Exception e){
+                            e.printStackTrace();
+                        }
+                        locationStr.append("Time: " + new Date() + "\n");
+                    }
+                }
+                Message message = new Message();
+                message.what = SHOW_LOCATION;
+                message.obj = locationStr.toString();
+                handler.sendMessage(message);
+            }
+        }).start();
+
     }
 
     @Override
