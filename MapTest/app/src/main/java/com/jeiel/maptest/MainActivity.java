@@ -1,16 +1,31 @@
 package com.jeiel.maptest;
 
 import android.app.Activity;
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.baidu.mapapi.SDKInitializer;
+import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.MapStatusUpdate;
+import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.model.LatLng;
+
+import java.util.List;
 
 public class MainActivity extends Activity {
 
     private MapView mapView;
+    private BaiduMap baiduMap;
+    private boolean isFirstLocate = true;
+    private LocationManager locationManager;
+    private String provider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,7 +33,60 @@ public class MainActivity extends Activity {
         SDKInitializer.initialize(getApplicationContext());
         setContentView(R.layout.activity_main);
         mapView = (MapView) findViewById(R.id.map_view);
+        baiduMap = mapView.getMap();
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        List<String> providers = locationManager.getProviders(true);
+        if(providers.contains(LocationManager.GPS_PROVIDER)){
+            provider = LocationManager.GPS_PROVIDER;
+        }else if(providers.contains(LocationManager.NETWORK_PROVIDER)){
+            provider = LocationManager.NETWORK_PROVIDER;
+        }else{
+            Toast.makeText(MainActivity.this, "no location provider to use", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Location location = locationManager.getLastKnownLocation(provider);
+        if(location != null){
+            navigateTo(location);
+        }
+
+        locationManager.requestLocationUpdates(provider, 1000, 1, locationListener);
     }
+    
+    private void navigateTo(Location location){
+        if(isFirstLocate){
+            //LatLng ll = new LatLng(location.getLatitude(), location.getLongitude());
+            LatLng ll = new LatLng(114.052345, 22.516059);
+            MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(ll);
+            baiduMap.animateMapStatus(update);
+            update = MapStatusUpdateFactory.zoomTo(16f);
+            baiduMap.animateMapStatus(update);
+            isFirstLocate = false;
+        }
+    }
+
+    LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            if(location != null){
+                navigateTo(location);
+            }
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
 
     @Override
     protected void onPause() {
