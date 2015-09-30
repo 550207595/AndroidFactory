@@ -15,6 +15,7 @@ import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.model.LatLng;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         mapView = (MapView) findViewById(R.id.map_view);
         baiduMap = mapView.getMap();
+        baiduMap.setMyLocationEnabled(true);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         List<String> providers = locationManager.getProviders(true);
         if(providers.contains(LocationManager.GPS_PROVIDER)){
@@ -45,23 +47,35 @@ public class MainActivity extends Activity {
             return;
         }
         Location location = locationManager.getLastKnownLocation(provider);
-        if(location != null){
-            navigateTo(location);
-        }
+
+        navigateTo(location);
 
         locationManager.requestLocationUpdates(provider, 1000, 1, locationListener);
     }
     
     private void navigateTo(Location location){
-        if(isFirstLocate){
-            //LatLng ll = new LatLng(location.getLatitude(), location.getLongitude());
-            LatLng ll = new LatLng(114.052345, 22.516059);
+        if(isFirstLocate&&location != null){
+            Toast.makeText(MainActivity.this, "use system LatLng", Toast.LENGTH_SHORT).show();
+            LatLng ll = new LatLng(location.getLatitude(), location.getLongitude());
+            MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(ll);
+            baiduMap.animateMapStatus(update);
+            update = MapStatusUpdateFactory.zoomTo(16f);
+            baiduMap.animateMapStatus(update);
+            isFirstLocate = false;
+        }else{
+            Toast.makeText(MainActivity.this, "use default Latlng", Toast.LENGTH_SHORT).show();
+            LatLng ll = new LatLng(22.516059, 114.052345);
             MapStatusUpdate update = MapStatusUpdateFactory.newLatLng(ll);
             baiduMap.animateMapStatus(update);
             update = MapStatusUpdateFactory.zoomTo(16f);
             baiduMap.animateMapStatus(update);
             isFirstLocate = false;
         }
+        MyLocationData.Builder locationBuilder = new MyLocationData.Builder();
+        locationBuilder.latitude(22.516059);
+        locationBuilder.longitude(114.052345);
+        MyLocationData locationData = locationBuilder.build();
+        baiduMap.setMyLocationData(locationData);
     }
 
     LocationListener locationListener = new LocationListener() {
@@ -103,7 +117,11 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        baiduMap.setMyLocationEnabled(false);
         mapView.onDestroy();
+        if(locationManager!=null){
+            locationManager.removeUpdates(locationListener);
+        }
     }
 
     @Override
