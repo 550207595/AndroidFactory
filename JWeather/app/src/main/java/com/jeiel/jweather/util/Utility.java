@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.Log;
-
 import com.jeiel.jweather.db.JWeatherDB;
 import com.jeiel.jweather.model.City;
 import com.jeiel.jweather.model.County;

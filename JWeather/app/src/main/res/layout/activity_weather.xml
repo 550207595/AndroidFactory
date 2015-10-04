@@ -8,6 +8,13 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="#484E61">
+        <ImageButton
+            android:id="@+id/switch_city"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:background="@mipmap/home" />
         <TextView
             android:id="@+id/city_name"
             android:layout_width="wrap_content"
@@ -16,6 +23,14 @@
             android:textColor="#fff"
             android:textSize="24sp"
             tools:text="city_name"/>
+        <ImageButton
+            android:id="@+id/refresh_weather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:background="@mipmap/circle"/>
     </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"
@@ -61,13 +76,13 @@
                 android:layout_gravity="center_horizontal"
                 android:orientation="horizontal">
                 <TextView
-                    android:id="@+id/temp1"
+                    android:id="@+id/temp2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:textColor="#fff"
                     android:textSize="40sp"
-                    tools:text="temp1"/>
+                    tools:text="temp2"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -78,13 +93,13 @@
                     android:textSize="40sp"
                     android:text="~"/>
                 <TextView
-                    android:id="@+id/temp2"
+                    android:id="@+id/temp1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:textColor="#fff"
                     android:textSize="40sp"
-                    tools:text="temp2"/>
+                    tools:text="temp1"/>
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>

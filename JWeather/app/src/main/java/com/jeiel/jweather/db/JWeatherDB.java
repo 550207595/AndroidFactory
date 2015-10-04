@@ -4,11 +4,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-
 import com.jeiel.jweather.model.City;
 import com.jeiel.jweather.model.County;
 import com.jeiel.jweather.model.Province;
-
 import java.util.ArrayList;
 import java.util.List;
 
