@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.jeiel.jweather.R;
+import com.jeiel.jweather.service.AutoUpdateService;
 import com.jeiel.jweather.util.HttpCallbackListener;
 import com.jeiel.jweather.util.HttpUtil;
 import com.jeiel.jweather.util.Utility;
@@ -56,6 +57,8 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
         }else{
             showWeather();
         }
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
     }
 
     private void queryWeatherCode(String countyCode){
@@ -110,7 +113,7 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
         temp1Text.setText(prefs.getString("temp1", ""));
         temp2Text.setText(prefs.getString("temp2", ""));
         weatherDespText.setText(prefs.getString("weather_desp", ""));
-        publishText.setText(prefs.getString("publish_time", "") + "发布");
+        publishText.setText("今天" + prefs.getString("publish_time", "") + "发布");
         currentDateText.setText(prefs.getString("current_date", ""));
         weatherInfoLayout.setVisibility(View.VISIBLE);
         cityNameText.setVisibility(View.VISIBLE);
